@@ -88,10 +88,6 @@ public class Main extends JavaPlugin {
 				FileChannel outputChannel = fos.getChannel();
 				
 				outputChannel.transferFrom(inputChannel, 0, Long.MAX_VALUE);
-
-				inputChannel.close();
-				outputChannel.close();
-				fos.close();
 				
 				//REPLACE EXISTING PLUGIN
 				FileInputStream fin = new FileInputStream(downloadedFile);
@@ -101,6 +97,10 @@ public class Main extends JavaPlugin {
 				
 				finalOutputChannel.transferFrom(finalInputChannel, 0, Long.MAX_VALUE);
 				
+
+				inputChannel.close();
+				outputChannel.close();
+				fos.close();
 				finalInputChannel.close();
 				fin.close();
 				finalOutputChannel.close();
