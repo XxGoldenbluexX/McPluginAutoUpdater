@@ -1,6 +1,7 @@
 package fr.xxgoldenbluexx.mcpluginautoupdater;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -13,8 +14,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import com.google.common.io.Files;
 
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
@@ -73,7 +72,7 @@ public class Main extends JavaPlugin {
 				Method getFile = JavaPlugin.class.getDeclaredMethod("getFile");
 				getFile.setAccessible(true);
 				File pluginFile = (File) getFile.invoke(plugin);
-				//mainPlugin.getLogger().severe("pluginFile="+pluginFile.getAbsolutePath());
+				mainPlugin.getLogger().severe("pluginFile="+pluginFile.getAbsolutePath());
 				File downloadFolder = new File(mainPlugin.getDataFolder(),"build/");
 				File downloadedFile = new File(downloadFolder,pluginName+".jar");
 				URL updateUrl = new URL(url);
@@ -83,17 +82,29 @@ public class Main extends JavaPlugin {
 				if (!downloadedFile.exists()) {
 					downloadedFile.createNewFile();
 				}
+				//DOWNLOAD
 				ReadableByteChannel inputChannel = Channels.newChannel(updateUrl.openStream());
 				FileOutputStream fos = new FileOutputStream(downloadedFile);
 				FileChannel outputChannel = fos.getChannel();
-				//DOWNLOAD TO STORAGE
-				outputChannel.transferFrom(inputChannel, 0, Long.MAX_VALUE);
-				//REPLACE EXISTING PLUGIN
-				Files.copy(downloadedFile, pluginFile);
 				
+				outputChannel.transferFrom(inputChannel, 0, Long.MAX_VALUE);
+
 				inputChannel.close();
 				outputChannel.close();
 				fos.close();
+				
+				//REPLACE EXISTING PLUGIN
+				FileInputStream fin = new FileInputStream(downloadedFile);
+				ReadableByteChannel finalInputChannel = Channels.newChannel(fin);
+				FileOutputStream ffos = new FileOutputStream(pluginFile);
+				FileChannel finalOutputChannel = fos.getChannel();
+				
+				finalOutputChannel.transferFrom(finalInputChannel, 0, Long.MAX_VALUE);
+				
+				finalInputChannel.close();
+				fin.close();
+				finalOutputChannel.close();
+				ffos.close();
 				sender.sendMessage(Component.text("Le plugin "+pluginName+" est desormet à jour!"));
 			}catch(Exception e) {
 				sender.sendMessage(Component.text("Une erreur est survenue lors de la mise à jour de "+pluginName+"."));
