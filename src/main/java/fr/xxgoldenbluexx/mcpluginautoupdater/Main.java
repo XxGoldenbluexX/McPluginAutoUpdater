@@ -8,6 +8,9 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -90,21 +93,22 @@ public class Main extends JavaPlugin {
 				outputChannel.transferFrom(inputChannel, 0, Long.MAX_VALUE);
 				
 				//REPLACE EXISTING PLUGIN
-				FileInputStream fin = new FileInputStream(downloadedFile);
+				/*FileInputStream fin = new FileInputStream(downloadedFile);
 				ReadableByteChannel finalInputChannel = fin.getChannel();
 				FileOutputStream ffos = new FileOutputStream(pluginFile);
 				FileChannel finalOutputChannel = fos.getChannel();
 				
 				finalOutputChannel.transferFrom(finalInputChannel, 0, Long.MAX_VALUE);
 				
-
+*/
 				inputChannel.close();
 				outputChannel.close();
 				fos.close();
+				Files.copy(downloadedFile.toPath(), pluginFile.toPath(), StandardCopyOption.REPLACE_EXISTING);/*
 				finalInputChannel.close();
 				fin.close();
 				finalOutputChannel.close();
-				ffos.close();
+				ffos.close();*/
 				sender.sendMessage(Component.text("Le plugin "+pluginName+" est desormet à jour!"));
 			}catch(Exception e) {
 				sender.sendMessage(Component.text("Une erreur est survenue lors de la mise à jour de "+pluginName+"."));
