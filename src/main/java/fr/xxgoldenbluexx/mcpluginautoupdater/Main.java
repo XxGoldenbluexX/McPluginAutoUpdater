@@ -73,7 +73,7 @@ public class Main extends JavaPlugin {
 				Method getFile = JavaPlugin.class.getDeclaredMethod("getFile");
 				getFile.setAccessible(true);
 				File pluginFile = (File) getFile.invoke(plugin);
-				mainPlugin.getLogger().severe("pluginFile="+pluginFile.getAbsolutePath());
+				//mainPlugin.getLogger().severe("pluginFile="+pluginFile.getAbsolutePath());
 				File downloadFolder = new File(mainPlugin.getDataFolder(),"build/");
 				File downloadedFile = new File(downloadFolder,pluginName+".jar");
 				URL updateUrl = new URL(url);
