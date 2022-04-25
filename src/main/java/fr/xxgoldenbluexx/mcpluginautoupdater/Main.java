@@ -82,7 +82,6 @@ public class Main extends JavaPlugin {
 				if (!downloadedFile.exists()) {
 					downloadedFile.createNewFile();
 				}
-				mainPlugin.getLogger().severe("PATH="+downloadedFile.getAbsolutePath());
 				ReadableByteChannel inputChannel = Channels.newChannel(updateUrl.openStream());
 				FileOutputStream fos = new FileOutputStream(downloadedFile);
 				FileChannel outputChannel = fos.getChannel();
