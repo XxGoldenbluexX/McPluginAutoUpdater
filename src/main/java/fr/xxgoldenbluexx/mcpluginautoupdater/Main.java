@@ -44,7 +44,7 @@ public class Main extends JavaPlugin {
 					sender.sendMessage(Component.text("Le plugin \""+pluginName+"\" est introuvable."));
 				}
 			}else {
-				sender.sendMessage(Component.text("Le nom du plugin à mettre à jour doit être de type String."));
+				sender.sendMessage(Component.text("Le nom du plugin Ã  mettre Ã  jour doit Ãªtre de type String."));
 			}
 		}else{
 			sender.sendMessage(Component.text("usage: update <pluginName>"));
@@ -70,14 +70,19 @@ public class Main extends JavaPlugin {
 		String url = plugin.getConfig().getString("update_url");
 		if (url!=null) {
 			try {
-				Method getFile = plugin.getClass().getDeclaredMethod("getFile");
+				Method getFile = JavaPlugin.class.getDeclaredMethod("getFile");
 				getFile.setAccessible(true);
 				File pluginFile = (File) getFile.invoke(plugin);
-				File downloadedFile = new File(mainPlugin.getDataFolder(),"build/"+pluginName+".jar");
+				File downloadFolder = new File(mainPlugin.getDataFolder(),"build/");
+				File downloadedFile = new File(downloadFolder,pluginName+".jar");
 				URL updateUrl = new URL(url);
-				if (!downloadedFile.exists()) {
-					downloadedFile.mkdir();
+				if (!downloadFolder.exists()) {
+					downloadFolder.mkdirs();
 				}
+				if (!downloadedFile.exists()) {
+					downloadedFile.createNewFile();
+				}
+				mainPlugin.getLogger().severe("PATH="+downloadedFile.getAbsolutePath());
 				ReadableByteChannel inputChannel = Channels.newChannel(updateUrl.openStream());
 				FileOutputStream fos = new FileOutputStream(downloadedFile);
 				FileChannel outputChannel = fos.getChannel();
@@ -89,12 +94,14 @@ public class Main extends JavaPlugin {
 				inputChannel.close();
 				outputChannel.close();
 				fos.close();
+				sender.sendMessage(Component.text("Le plugin "+pluginName+" est desormet Ã  jour!"));
 			}catch(Exception e) {
-				sender.sendMessage(Component.text("Une erreur est survenue lors de la mise à jour de "+pluginName+"."));
+				sender.sendMessage(Component.text("Une erreur est survenue lors de la mise Ã  jour de "+pluginName+"."));
 				mainPlugin.getLogger().severe(e.getMessage());
+				e.printStackTrace();
 			}
 		}else {
-			sender.sendMessage(Component.text("Le plugin "+pluginName+" ne spécifie pas de lien pour se mettre à jour."));
+			sender.sendMessage(Component.text("Le plugin "+pluginName+" ne spÃ©cifie pas de lien pour se mettre Ã  jour."));
 		}
 	}
 }

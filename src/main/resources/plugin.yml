@@ -1,0 +1,5 @@
+name: McPluginAutoUpdater
+version: 1.0
+main: fr.xxgoldenbluexx.mcpluginautoupdater.Main
+api-version: 1.18
+depend: [CommandAPI]
