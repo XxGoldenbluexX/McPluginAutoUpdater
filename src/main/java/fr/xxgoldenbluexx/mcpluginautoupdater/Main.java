@@ -102,7 +102,7 @@ public class Main extends JavaPlugin {
 				finalOutputChannel.transferFrom(finalInputChannel, 0, Long.MAX_VALUE);
 				
 				finalInputChannel.close();
-				fin.close();
+				//fin.close();
 				finalOutputChannel.close();
 				ffos.close();
 				sender.sendMessage(Component.text("Le plugin "+pluginName+" est desormet à jour!"));
