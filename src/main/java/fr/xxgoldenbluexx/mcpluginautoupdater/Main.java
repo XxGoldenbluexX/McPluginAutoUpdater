@@ -95,14 +95,14 @@ public class Main extends JavaPlugin {
 				
 				//REPLACE EXISTING PLUGIN
 				FileInputStream fin = new FileInputStream(downloadedFile);
-				ReadableByteChannel finalInputChannel = Channels.newChannel(fin);
+				ReadableByteChannel finalInputChannel = fin.getChannel();
 				FileOutputStream ffos = new FileOutputStream(pluginFile);
 				FileChannel finalOutputChannel = fos.getChannel();
 				
 				finalOutputChannel.transferFrom(finalInputChannel, 0, Long.MAX_VALUE);
 				
 				finalInputChannel.close();
-				//fin.close();
+				fin.close();
 				finalOutputChannel.close();
 				ffos.close();
 				sender.sendMessage(Component.text("Le plugin "+pluginName+" est desormet à jour!"));
