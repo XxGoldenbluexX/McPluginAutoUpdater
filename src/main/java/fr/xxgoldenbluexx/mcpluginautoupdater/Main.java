@@ -36,7 +36,6 @@ public class Main extends JavaPlugin {
 		super.onEnable();
 		mainPlugin = this;
 		CommandAPI.onEnable(this);
-		getLogger().severe("VERSION 6");
 		new CommandAPICommand("update").withAliases("updt").withArguments(new StringArgument("pluginName")).executes(Main::UpdateCommand).register();
 	}
 	
@@ -118,7 +117,7 @@ public class Main extends JavaPlugin {
 					}
 				}
 			}.runTaskAsynchronously(mainPlugin);
-			sender.sendMessage(Component.text("Le plugin "+pluginName+" à été téléchargé, il sera replacé au prochain redémarage."));
+			sender.sendMessage(Component.text("Le plugin "+pluginName+" à été téléchargé et remplacé, les changements seront effectif au prochain redémarage."));
 		}else {
 			sender.sendMessage(Component.text("Le plugin "+pluginName+" ne spécifie pas de lien pour se mettre à jour."));
 		}
