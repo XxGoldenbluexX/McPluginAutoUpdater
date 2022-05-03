@@ -1,6 +1,7 @@
 package fr.xxgoldenbluexx.mcpluginautoupdater;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -8,8 +9,6 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -37,7 +36,7 @@ public class Main extends JavaPlugin {
 		super.onEnable();
 		mainPlugin = this;
 		CommandAPI.onEnable(this);
-		getLogger().severe("VERSION 4");
+		getLogger().severe("VERSION 6");
 		new CommandAPICommand("update").withAliases("updt").withArguments(new StringArgument("pluginName")).executes(Main::UpdateCommand).register();
 	}
 	
@@ -86,13 +85,11 @@ public class Main extends JavaPlugin {
 			}catch (Exception e) {
 				error = "Impossible de récuperer le fichier du plugin avec de la reflexion: "+e.getMessage();
 				sender.sendMessage(Component.text(error));
-				mainPlugin.getLogger().severe(error);
 				return;
 			}
 			if (pluginFile == null) {
 				error = "Impossible de récuperer le fichier du plugin avec de la reflexion, la valeur retournée est null";
 				sender.sendMessage(Component.text(error));
-				mainPlugin.getLogger().severe(error);
 				return;
 			}
 			final File fpluginFile = pluginFile;
@@ -105,7 +102,6 @@ public class Main extends JavaPlugin {
 							@Override
 							public void run() {
 								sender.sendMessage(Component.text(error1));
-								mainPlugin.getLogger().severe(error1);
 							}
 						}.runTask(mainPlugin);
 						return;
@@ -116,7 +112,6 @@ public class Main extends JavaPlugin {
 							@Override
 							public void run() {
 								sender.sendMessage(Component.text(error2));
-								mainPlugin.getLogger().severe(error2);
 							}
 						}.runTask(mainPlugin);
 						return;
@@ -174,7 +169,11 @@ public class Main extends JavaPlugin {
 		try {
 			File downloadFolder = new File(mainPlugin.getDataFolder(),"downloads/");
 			File downloadedFile = new File(downloadFolder,pluginName+".jar");
-			Files.copy(downloadedFile.toPath(), output.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			try(ReadableByteChannel inputChannel = Channels.newChannel(new FileInputStream(downloadedFile));
+					FileOutputStream fos = new FileOutputStream(output);
+					FileChannel outputChannel = fos.getChannel();){
+				outputChannel.transferFrom(inputChannel, 0, Long.MAX_VALUE);
+			}
 		}catch(Exception e) {
 			error = "Impossible de remplacer le plugin avec sa mise à jour: "+e.getMessage();
 		}
