@@ -16,6 +16,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
@@ -36,7 +37,7 @@ public class Main extends JavaPlugin {
 		super.onEnable();
 		mainPlugin = this;
 		CommandAPI.onEnable(this);
-		getLogger().severe("VERSION 2");
+		getLogger().severe("VERSION 4");
 		new CommandAPICommand("update").withAliases("updt").withArguments(new StringArgument("pluginName")).executes(Main::UpdateCommand).register();
 	}
 	
@@ -77,14 +78,8 @@ public class Main extends JavaPlugin {
 		String url = plugin.getConfig().getString("update_url");
 		File pluginFile = null;
 		if (url!=null) {
-			String error = download(url,pluginName);
-			if (error != null) {
-				sender.sendMessage(Component.text(error));
-				mainPlugin.getLogger().severe(error);
-				return;
-			}
+			String error = "";
 			try {
-				
 				Method getFile = JavaPlugin.class.getDeclaredMethod("getFile");
 				getFile.setAccessible(true);
 				pluginFile = (File) getFile.invoke(plugin);
@@ -100,12 +95,34 @@ public class Main extends JavaPlugin {
 				mainPlugin.getLogger().severe(error);
 				return;
 			}
-			error = replace(pluginFile,pluginName);
-			if (error != null) {
-				sender.sendMessage(Component.text(error));
-				mainPlugin.getLogger().severe(error);
-				return;
-			}
+			final File fpluginFile = pluginFile;
+			new BukkitRunnable() {
+				@Override
+				public void run() {
+					final String error1 = download(url,pluginName);
+					if (error1 != null) {
+						new BukkitRunnable() {
+							@Override
+							public void run() {
+								sender.sendMessage(Component.text(error1));
+								mainPlugin.getLogger().severe(error1);
+							}
+						}.runTask(mainPlugin);
+						return;
+					}
+					final String error2 = replace(fpluginFile,pluginName);
+					if (error2 != null) {
+						new BukkitRunnable() {
+							@Override
+							public void run() {
+								sender.sendMessage(Component.text(error2));
+								mainPlugin.getLogger().severe(error2);
+							}
+						}.runTask(mainPlugin);
+						return;
+					}
+				}
+			}.runTaskAsynchronously(mainPlugin);
 			sender.sendMessage(Component.text("Le plugin "+pluginName+" à été téléchargé, il sera replacé au prochain redémarage."));
 		}else {
 			sender.sendMessage(Component.text("Le plugin "+pluginName+" ne spécifie pas de lien pour se mettre à jour."));
