@@ -9,6 +9,8 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -19,6 +21,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
+import dev.jorel.commandapi.SuggestionInfo;
+import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.StringArgument;
 import net.kyori.adventure.text.Component;
 
@@ -36,7 +40,25 @@ public class Main extends JavaPlugin {
 		super.onEnable();
 		mainPlugin = this;
 		CommandAPI.onEnable(this);
-		new CommandAPICommand("update").withAliases("updt").withArguments(new StringArgument("pluginName")).executes(Main::UpdateCommand).register();
+		new CommandAPICommand("update")
+		.withAliases("updt")
+		.withArguments(
+				new StringArgument("pluginName")
+				.replaceSuggestions(ArgumentSuggestions.strings(Main::GetAllPluginNames))
+				)
+		.executes(Main::UpdateCommand)
+		.register();
+	}
+	
+	private static String[] GetAllPluginNames(SuggestionInfo info) {
+		List<String> list = new ArrayList<>();
+		PluginManager pmanager = Bukkit.getServer().getPluginManager();
+		for (Plugin plugin : pmanager.getPlugins()) {
+			if (plugin.isEnabled()) {
+			     list.add(plugin.getName());
+			}
+		}
+		return (String[]) list.toArray();
 	}
 	
 	public static void UpdateCommand(CommandSender sender, Object[] args) {
