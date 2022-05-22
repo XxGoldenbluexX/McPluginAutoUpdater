@@ -58,7 +58,7 @@ public class Main extends JavaPlugin {
 			     list.add(plugin.getName());
 			}
 		}
-		return (String[]) list.toArray();
+		return list.toArray(new String[0]);
 	}
 	
 	public static void UpdateCommand(CommandSender sender, Object[] args) {
