@@ -24,6 +24,7 @@ import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.SuggestionInfo;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.StringArgument;
+import dev.jorel.commandapi.arguments.TextArgument;
 import net.kyori.adventure.text.Component;
 
 public class Main extends JavaPlugin {
@@ -52,11 +53,14 @@ public class Main extends JavaPlugin {
 		.withAliases("updt")
 		.withArguments(
 				new StringArgument("pluginName")
-				.replaceSuggestions(ArgumentSuggestions.strings(Main::GetAllPluginNames))
+				.replaceSuggestions(ArgumentSuggestions.strings(Main::GetAllPluginNames)),
+				new TextArgument("downloadUrl")
 				)
-		.withArguments(
-				new StringArgument("downloadUrl"))
 		.executes(Main::UpdateCommand)
+		.register();
+		new CommandAPICommand("update")
+		.withAliases("updt")
+		.executes(Main::ShowHelp)
 		.register();
 	}
 	
@@ -93,6 +97,11 @@ public class Main extends JavaPlugin {
 		};
 		Plugin plugin = seekPlugin((String)args[0]);
 		if (plugin==null) return;
+	}
+	
+	public static void ShowHelp(CommandSender sender, Object[] args) {
+		sender.sendMessage(Component.text("usage: update <pluginName> [<downloadUrl>]"));
+		return;
 	}
 	
 	private static JavaPlugin seekPlugin(String name) {
