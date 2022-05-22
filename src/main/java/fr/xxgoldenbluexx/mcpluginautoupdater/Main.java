@@ -42,7 +42,7 @@ public class Main extends JavaPlugin {
 		mainPlugin = this;
 		CommandAPI.onEnable(this);
 		new CommandAPICommand("update")
-		.withAliases("updt")
+		.withAliases("upd")
 		.withArguments(
 				new StringArgument("pluginName")
 				.replaceSuggestions(ArgumentSuggestions.strings(Main::GetAllPluginNames))
@@ -50,7 +50,7 @@ public class Main extends JavaPlugin {
 		.executes(Main::UpdateCommand)
 		.register();
 		new CommandAPICommand("update")
-		.withAliases("updt")
+		.withAliases("upd")
 		.withArguments(
 				new StringArgument("pluginName")
 				.replaceSuggestions(ArgumentSuggestions.strings(Main::GetAllPluginNames)),
@@ -59,7 +59,7 @@ public class Main extends JavaPlugin {
 		.executes(Main::UpdateCommand)
 		.register();
 		new CommandAPICommand("update")
-		.withAliases("updt")
+		.withAliases("upd")
 		.executes(Main::ShowHelp)
 		.register();
 	}
