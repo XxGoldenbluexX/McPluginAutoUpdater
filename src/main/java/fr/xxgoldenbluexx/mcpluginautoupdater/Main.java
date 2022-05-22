@@ -48,6 +48,15 @@ public class Main extends JavaPlugin {
 				)
 		.executes(Main::UpdateCommand)
 		.register();
+		new CommandAPICommand("update")
+		.withAliases("updt")
+		.withArguments(
+				new StringArgument("pluginName")
+				.replaceSuggestions(ArgumentSuggestions.strings(Main::GetAllPluginNames)),
+				new StringArgument("downloadUrl")
+				)
+		.executes(Main::UpdateCommand)
+		.register();
 	}
 	
 	private static String[] GetAllPluginNames(SuggestionInfo info) {
@@ -67,7 +76,11 @@ public class Main extends JavaPlugin {
 				String pluginName = (String)args[0];
 				JavaPlugin plugin = seekPlugin(pluginName);
 				if (plugin!=null) {
-					tryUpdate(plugin,sender);
+					if (args.length>1) {
+						tryUpdate(plugin,sender,(String)args[1]);
+					}else {
+						tryUpdate(plugin,sender);
+					}
 				}else {
 					sender.sendMessage(Component.text("Le plugin \""+pluginName+"\" est introuvable."));
 				}
@@ -75,7 +88,7 @@ public class Main extends JavaPlugin {
 				sender.sendMessage(Component.text("Le nom du plugin à mettre à jour doit être de type String."));
 			}
 		}else{
-			sender.sendMessage(Component.text("usage: update <pluginName>"));
+			sender.sendMessage(Component.text("usage: update <pluginName> [<downloadUrl>]"));
 		};
 		Plugin plugin = seekPlugin((String)args[0]);
 		if (plugin==null) return;
@@ -94,8 +107,16 @@ public class Main extends JavaPlugin {
 	}
 	
 	private static void tryUpdate(JavaPlugin plugin, CommandSender sender) {
+		try {
+			String url = plugin.getConfig().getString("update_url");
+			tryUpdate(plugin, sender, url);
+		}catch(Exception e) {
+			sender.sendMessage(Component.text("Impossible de trouver l'url de mise à jours du plugin."));
+		}
+	}
+	
+	private static void tryUpdate(JavaPlugin plugin, CommandSender sender, String url) {
 		String pluginName = plugin.getName();
-		String url = plugin.getConfig().getString("update_url");
 		File pluginFile = null;
 		if (url!=null) {
 			String error = "";
