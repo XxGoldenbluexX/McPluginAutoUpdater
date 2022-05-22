@@ -52,9 +52,10 @@ public class Main extends JavaPlugin {
 		.withAliases("updt")
 		.withArguments(
 				new StringArgument("pluginName")
-				.replaceSuggestions(ArgumentSuggestions.strings(Main::GetAllPluginNames)),
-				new StringArgument("downloadUrl")
+				.replaceSuggestions(ArgumentSuggestions.strings(Main::GetAllPluginNames))
 				)
+		.withArguments(
+				new StringArgument("downloadUrl"))
 		.executes(Main::UpdateCommand)
 		.register();
 	}
